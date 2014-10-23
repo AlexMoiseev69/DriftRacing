@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BEPUphysics;
 using SharpDX;
 using Fusion;
 using Fusion.Audio;
@@ -15,6 +16,7 @@ namespace DriftRacer
 {
     public class DriftRacer : Game
     {
+        private Space space = new Space();
         /// <summary>
         /// DriftRacer constructor
         /// </summary>
