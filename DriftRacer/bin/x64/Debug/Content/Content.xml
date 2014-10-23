@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfDescriptor xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>debugFont.tga</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="UberShaderContentItem">
+    <Path>debugRender.hlsl</Path>
+    <Dependencies />
+    <ContentProcessor>Ubershader Compiler</ContentProcessor>
+    <DisableOptimization>false</DisableOptimization>
+    <PreferFlowControl>false</PreferFlowControl>
+    <AvoidFlowControl>false</AvoidFlowControl>
+    <MatrixPacking>RowMajor</MatrixPacking>
+    <PSEntryPoint>PSMain</PSEntryPoint>
+    <VSEntryPoint>VSMain</VSEntryPoint>
+    <GSEntryPoint>GSMain</GSEntryPoint>
+    <DSEntryPoint>DSMain</DSEntryPoint>
+    <HSEntryPoint>HSMain</HSEntryPoint>
+    <CSEntryPoint>CSMain</CSEntryPoint>
+  </Descriptor>
+  <Descriptor xsi:type="UberShaderContentItem">
+    <Path>spriteBatch.hlsl</Path>
+    <Dependencies />
+    <ContentProcessor>Ubershader Compiler</ContentProcessor>
+    <DisableOptimization>false</DisableOptimization>
+    <PreferFlowControl>false</PreferFlowControl>
+    <AvoidFlowControl>false</AvoidFlowControl>
+    <MatrixPacking>RowMajor</MatrixPacking>
+    <PSEntryPoint>PSMain</PSEntryPoint>
+    <VSEntryPoint>VSMain</VSEntryPoint>
+    <GSEntryPoint>GSMain</GSEntryPoint>
+    <DSEntryPoint>DSMain</DSEntryPoint>
+    <HSEntryPoint>HSMain</HSEntryPoint>
+    <CSEntryPoint>CSMain</CSEntryPoint>
+  </Descriptor>
+</ArrayOfDescriptor>
