@@ -32,3 +32,5 @@ D:\dududko\DriftRacing\DriftRacer\bin\x64\Debug\SharpDX.DirectInput.dll
 D:\dududko\DriftRacing\DriftRacer\bin\x64\Debug\SharpDX.RawInput.dll
 D:\dududko\DriftRacing\DriftRacer\bin\x64\Debug\BEPUutilities.dll
 D:\dududko\DriftRacing\DriftRacer\obj\x64\Debug\DriftRacer.csprojResolveAssemblyReference.cache
+D:\dududko\DriftRacing\DriftRacer\bin\x64\Debug\BEPUutilities.xml
+D:\dududko\DriftRacing\DriftRacer\bin\x64\Debug\BEPUphysics.xml
