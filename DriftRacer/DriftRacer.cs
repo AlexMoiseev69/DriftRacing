@@ -1,33 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics;
+using BEPUphysics.CollisionShapes;
+using BEPUphysics.CollisionShapes.ConvexShapes;
 using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.Vehicle;
 using BEPUutilities;
 using Vector3BEPU = BEPUutilities.Vector3;
+using MatrixBEPU = BEPUutilities.Matrix;
 using Vertex = Fusion.Graphics.Mesh.Vertex;
-using SharpDX;
 using Fusion;
 using Fusion.Audio;
 using Fusion.Content;
 using Fusion.Graphics;
 using Fusion.Input;
 using Fusion.Utils;
+using Color = SharpDX.Color;
+using Quaternion = BEPUutilities.Quaternion;
 using Vector3 = SharpDX.Vector3;
 
 namespace DriftRacer
 {
     public class DriftRacer : Game
     {
-        private Space space;
-        private Box ground;
-        private Box carBox;
-        private Box barruer;
 
-        Texture2D tex;
-        Texture2D carTex;
+        /// <summary>
+        /// Speed that the Vehicle tries towreach when moving backward.
+        /// </summary>
+        public float BackwardSpeed = -13;
+
+        /// <summary>
+        /// Speed that the Vehicle tries to reach when moving forward.
+        /// </summary>
+        public float ForwardSpeed = 130;
+
+        /// <summary>
+        /// Maximum turn angle of the wheels.
+        /// </summary>
+        public float MaximumTurnAngle = (float)Math.PI / 6;
+
+        /// <summary>
+        /// Turning speed of the wheels in radians per second.
+        /// </summary>
+        public float TurnSpeed = MathHelper.Pi;
+
+
+        private Space space;
+        private Car[] cars = new Car[4];
+
+        private float vWidth = 2.5f * 10f;
+        private float vHeight = 4.5f * 10f;
+        private Box ground;
+
+        private Texture2D tex;
+        public static Bitmap Surfece;
+        private Texture2D carTex;
 
         /// <summary>
         /// DriftRacer constructor
@@ -71,16 +103,32 @@ namespace DriftRacer
         {
             //	initialize services :
             var device = GraphicsDevice;
-            device.FullScreen = true;
+            //device.FullScreen = true;
 
             base.Initialize();
             InitPhysics();
 
-            tex = Content.Load<Texture2D>("images/route.png");
+            addCars();
+
+
+            tex = Content.Load<Texture2D>("images/route_1.png");
+
             carTex = Content.Load<Texture2D>("images/car1.png");
+            var x1 = carTex.SizeRcpSize.X;
 
             //	add keyboard handler :
             InputDevice.KeyDown += InputDevice_KeyDown;
+
+
+            Surfece = new Bitmap("D:/dududko/DriftRacing/DriftRacer/Content/images/route_1_mh.png");
+        }
+
+        private void addCars()
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                cars[i] = new Car(new Vector3BEPU(100, 10, 100), space);
+            }
         }
 
 
@@ -89,44 +137,20 @@ namespace DriftRacer
             int w = GraphicsDevice.Viewport.Width;
             int h = GraphicsDevice.Viewport.Height;
 
-            int carWidth = w/5;
-            int carHeight = h/10;
-
             space = new Space();
 
             // add up, right, down, left borders
-            space.Add(new Box(new Vector3BEPU(w/2f, 0, 0), w, 20, 10));
-            space.Add(new Box(new Vector3BEPU(w, 0, h/2f), 10, 20, h));
-            space.Add(new Box(new Vector3BEPU(w/2f, 0, h), w, 20, 10));
-            space.Add(new Box(new Vector3BEPU(0, 0, h/2f), 10, 20, h));
+            space.Add(new Box(new Vector3BEPU(w/2f, 0, -5), w, 20, 10));
+            space.Add(new Box(new Vector3BEPU(w + 5, 0, h/2f), 10, 20, h));
+            space.Add(new Box(new Vector3BEPU(w/2f, 0, h+5), w, 20, 10));
+            space.Add(new Box(new Vector3BEPU(-5, 0, h/2f), 10, 20, h));
 
 
-            ground = new Box(new Vector3BEPU(w / 2f, -2, h / 2f), w, 4, h);
+            ground = new Box(new Vector3BEPU(w / 2f, -10, h / 2f), w, 20, h);
             
             space.Add(ground);
-            carBox = new Box(new Vector3BEPU(100, 0, 100), carWidth, 10, carHeight, 1);
-            //carBox.AngularVelocity = new Vector3BEPU(0, 1, 0);
 
-            barruer = new Box(new Vector3BEPU(w/2, 0, h/2), 200, 20, 50);
-            space.Add(barruer);
-            
-
-            Vector3BEPU center = new Vector3BEPU(carBox.Width, 0, carBox.Height);
-            Vector3BEPU vel = new Vector3BEPU(10, 0, -10);
-            Vector3BEPU vel1 = new Vector3BEPU(10, 0, -10);
-            //carBox.ApplyImpulse(ref center, ref vel);
-            //carBox.ApplyAngularImpulse(ref vel1);
-
-            space.Add(carBox);
-            //space.Add(new Box(new Vector3BEPU(0, 8, 0), 10, 10, 10, 1));
-            //space.Add(new Box(new Vector3BEPU(0, 12, 0), 10, 10, 10, 1));
-
-            space.ForceUpdater.Gravity = new Vector3BEPU(0, -9.81f, 0);
-
-
-
-
-
+            space.ForceUpdater.Gravity = new Vector3BEPU(0, -9.81f, 0f);
         }
 
 
@@ -193,8 +217,9 @@ namespace DriftRacer
             ds.Add("F5   - build content and reload textures");
             ds.Add("F12  - make screenshot");
             ds.Add("ESC  - exit");
+            
 
-            space.Update(gameTime.ElapsedSec);
+            space.Update(gameTime.ElapsedSec * 10f);
 
             for (int playerIndex = 0; playerIndex <= 3; playerIndex++)
             {
@@ -203,15 +228,7 @@ namespace DriftRacer
                 if (gp.IsConnected)
                 {
                     var impulse = new Vector3BEPU(gp.RightStick.X, 0, -gp.RightStick.Y);
-                    carBox.ApplyLinearImpulse(ref impulse);
                     //ds.Add("Car: y={0}", carBox.Position.Y);
-                    ds.Add(Color.Red, "Car: x={0}, y={1}, z={2}, w={2}", ((int)(carBox.Orientation.X * 100)), (carBox.Orientation.W < 0 ? -1 : 1) * ((int)(carBox.Orientation.Y * 100)) / 100f, ((int)carBox.Orientation.Z * 100) / 100f, ((int)(carBox.Orientation.W * 100)) / 100f);
-                    ds.Add(Color.Red, "Car: W={0}", carBox.Orientation.W);
-                    ds.Add(Color.Red, "Car: Y={0}", carBox.Orientation.Y);
-                    ds.Add("angle = {0}", (float)(Math.Acos(carBox.Orientation.W) * 2));
-
-                    var impulse1 = new Vector3BEPU(gp.LeftStick.X, gp.LeftStick.X, gp.LeftStick.X);
-                    //carBox.ApplyAngularImpulse(ref impulse1);
 
                     ds.Add(Color.LightGreen, "Gamepad #{0} is connected", playerIndex);
 
@@ -240,6 +257,80 @@ namespace DriftRacer
                     if (gp.IsKeyPressed(GamepadButtons.DPadDown)) ds.Add("[Down]");
                     if (gp.IsKeyPressed(GamepadButtons.DPadUp)) ds.Add("[Up]");
 
+
+                    if (gp.IsKeyPressed(GamepadButtons.A))
+                    {
+                        //Drive
+                        gp.SetVibration(0, 100);
+                        updateCarsParameters();
+
+
+                        cars[playerIndex].Vehicle.Wheels[0].DrivingMotor.TargetSpeed = ForwardSpeed;
+                        cars[playerIndex].Vehicle.Wheels[2].DrivingMotor.TargetSpeed = ForwardSpeed;
+                    }
+                    else if (gp.IsKeyPressed(GamepadButtons.B))
+                    {
+                        //Reverse
+                        cars[playerIndex].Vehicle.Wheels[0].DrivingMotor.TargetSpeed = BackwardSpeed;
+                        cars[playerIndex].Vehicle.Wheels[2].DrivingMotor.TargetSpeed = BackwardSpeed;
+                    }
+                    else
+                    {
+                        //Idle
+                        cars[playerIndex].Vehicle.Wheels[0].DrivingMotor.TargetSpeed = 0;
+                        cars[playerIndex].Vehicle.Wheels[2].DrivingMotor.TargetSpeed = 0;
+                    }
+                    if (gp.IsKeyPressed(GamepadButtons.RightShoulder))
+                    {
+                        //Brake
+                        foreach (Wheel wheel in cars[playerIndex].Vehicle.Wheels)
+                        {
+                            wheel.Brake.IsBraking = true;
+                        }
+                    }
+                    else
+                    {
+                        //Release brake
+                        foreach (Wheel wheel in cars[playerIndex].Vehicle.Wheels)
+                        {
+                            wheel.Brake.IsBraking = false;
+                        }
+                    }
+                    //Use smooth steering; while held down, move towards maximum.
+                    //When not pressing any buttons, smoothly return to facing forward.
+                    float angle;
+                    bool steered = false;
+                    if (gp.IsKeyPressed(GamepadButtons.DPadLeft))
+                    {
+                        steered = true;
+                        angle = Math.Max(cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedSec, -MaximumTurnAngle);
+                        cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle = angle;
+                        cars[playerIndex].Vehicle.Wheels[3].Shape.SteeringAngle = angle;
+                    }
+                    if (gp.IsKeyPressed(GamepadButtons.DPadRight))
+                    {
+                        steered = true;
+                        angle = Math.Min(cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedSec, MaximumTurnAngle);
+                        cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle = angle;
+                        cars[playerIndex].Vehicle.Wheels[3].Shape.SteeringAngle = angle;
+                    }
+                    if (!steered)
+                    {
+                        //Neither key was pressed, so de-steer.
+                        if (cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle > 0)
+                        {
+                            angle = Math.Max(cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedSec, 0);
+                            cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle = angle;
+                            cars[playerIndex].Vehicle.Wheels[3].Shape.SteeringAngle = angle;
+                        }
+                        else
+                        {
+                            angle = Math.Min(cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedSec, 0);
+                            cars[playerIndex].Vehicle.Wheels[1].Shape.SteeringAngle = angle;
+                            cars[playerIndex].Vehicle.Wheels[3].Shape.SteeringAngle = angle;
+                        }
+                    }
+
                 }
                 else
                 {
@@ -248,6 +339,7 @@ namespace DriftRacer
 
                 }
             }
+            
 
             base.Update(gameTime);
         }
@@ -264,17 +356,33 @@ namespace DriftRacer
             var sb = GetService<SpriteBatch>();
 
             sb.Begin();
-
             sb.Draw(tex, 0, 0, ground.Width, ground.Length, Color.White);
-            sb.DrawSprite(tex, barruer.Position.X, barruer.Position.Z, barruer.Width, barruer.Length, 0, Color.White);
-            var cos = (carBox.Orientation.Y < 0)
-                ? -carBox.Orientation.W
-                : carBox.Orientation.W;
-            sb.DrawSprite(carTex, carBox.Position.X, carBox.Position.Z, carBox.Width, carBox.Length, (float)(Math.Acos(cos) * 2), Color.White);
-                
+            foreach (var car in cars)
+            {
+                if (car != null)
+                {
+                    var cos1 = (car.Vehicle.Body.Orientation.Y < 0)
+                        ? -car.Vehicle.Body.Orientation.W
+                        : car.Vehicle.Body.Orientation.W;
+                    sb.DrawSprite(carTex, car.Vehicle.Body.Position.X, car.Vehicle.Body.Position.Z, vHeight, vWidth,
+                        (float) (Math.Acos(cos1)*2 + Math.PI/2), Color.White);
+                }
+            }
             sb.End();
 
             base.Draw(gameTime, stereoEye);
+        }
+
+        private void updateCarsParameters()
+        {
+            foreach (var car in cars)
+            {
+                if (car != null)
+                {
+
+                    car.Update();
+                }
+            }
         }
     }
 }
