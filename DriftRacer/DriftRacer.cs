@@ -41,9 +41,11 @@ namespace DriftRacer
     {
         public GameState GameState;
         private Space space;
+        private Box tribunes;
         private List<User> users = new List<User>(); 
 
         private Texture2D tex;
+        private Texture2D tribuneTex;
         public static Bitmap Surfece;
 
         private int mapId = -1;
@@ -97,8 +99,8 @@ namespace DriftRacer
             //device.FullScreen = true;
 
             base.Initialize();
-            InitPhysics();
             LoadTextures();
+            InitPhysics();
             InitializeUzers();
 
             // there is a small bug with wheels on the game start
@@ -154,6 +156,8 @@ namespace DriftRacer
             var path = Environment.CurrentDirectory;
             path = path.Replace("bin\\x64\\Debug", GetService<ConfigService>().TrackConfig.Tracks[1].TrackSurfaceTexture);
             Surfece = new Bitmap(path);
+
+            tribuneTex = Content.Load<Texture2D>("images/tribunes.png");
         }
 
         private void InitPhysics()
@@ -164,12 +168,16 @@ namespace DriftRacer
             space = new Space();
 
             // add up, right, down, left borders
-            space.Add(new Box(new Vector3BEPU(w/2f, 0, -5), w, 20, 10));
-            space.Add(new Box(new Vector3BEPU(w + 5, 0, h/2f), 10, 20, h));
-            space.Add(new Box(new Vector3BEPU(w/2f, 0, h+5), w, 20, 10));
-            space.Add(new Box(new Vector3BEPU(-5, 0, h/2f), 10, 20, h));
+            space.Add(new Box(new Vector3BEPU(w / 2f    , 0     , -5    ), w    , 20, 10    ));
+            space.Add(new Box(new Vector3BEPU(w + 5     , 0     , h / 2f), 10   , 20, h     ));
+            space.Add(new Box(new Vector3BEPU(w / 2f    , 0     , h + 5 ), w    , 20, 10    ));
+            space.Add(new Box(new Vector3BEPU(-5        , 0     , h / 2f), 10   , 20, h     ));
             // add ground
-            space.Add(new Box(new Vector3BEPU(w / 2f, -10, h / 2f), w, 20, h));
+            space.Add(new Box(new Vector3BEPU(w / 2f    , -10   , h / 2f), w    , 20, h     ));
+
+            tribunes = new Box(new Vector3BEPU(w / 2f   , 0     , h / 4f), tribuneTex.Width, 20, tribuneTex.Height * 4f / 5f);
+            space.Add(tribunes);
+
             // set gravity vector
             space.ForceUpdater.Gravity = new Vector3BEPU(0, -9.81f, 0f);
         }
@@ -308,6 +316,10 @@ namespace DriftRacer
 
             sb.Begin();
             sb.Draw(tex, 0, 0, Parameters.Width, Parameters.Height, Color.White);
+            if (mapId == 1) {
+                sb.Draw(tribuneTex, tribunes.Position.X - tribunes.Width/2, tribunes.Position.Z - tribunes.Length/2,
+                    tribunes.Width, tribunes.Length, Color.White);
+            }
             sb.End();
             foreach (User user in users) {
                 user.Draw(sb);
@@ -331,6 +343,12 @@ namespace DriftRacer
                 user.MoveToPosition(track.CarsStartPositions[i++]);
             }
 
+            if (mapId == 0) {
+                space.Remove(tribunes);
+            }
+            else {
+                space.Add(tribunes);
+            }
             for (int j = 0; j < 100; j++) {
                 space.Update(100f);
             }
