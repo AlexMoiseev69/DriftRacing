@@ -42,10 +42,12 @@ namespace DriftRacer
         public GameState GameState;
         private Space space;
         private Box tribunes;
+        private Box[] borders;
         private List<User> users = new List<User>(); 
 
         private Texture2D tex;
         private Texture2D tribuneTex;
+        private Texture2D borderTex;
         public static Bitmap Surfece;
 
         private int mapId = -1;
@@ -158,6 +160,7 @@ namespace DriftRacer
             Surfece = new Bitmap(path);
 
             tribuneTex = Content.Load<Texture2D>("images/tribunes.png");
+            borderTex = Content.Load<Texture2D>("images/border.png");
         }
 
         private void InitPhysics()
@@ -178,6 +181,9 @@ namespace DriftRacer
             tribunes = new Box(new Vector3BEPU(w / 2f   , 0     , h / 4f), tribuneTex.Width, 20, tribuneTex.Height * 4f / 5f);
             space.Add(tribunes);
 
+            borders = new Box[1];
+            borders[0] = new Box(new Vector3BEPU(w / 2f - 10f, 0, h / 4f), w * 2f / 3f, 20, 20);
+            space.Add(borders[0]);
             // set gravity vector
             space.ForceUpdater.Gravity = new Vector3BEPU(0, -9.81f, 0f);
         }
@@ -317,6 +323,11 @@ namespace DriftRacer
             sb.Begin();
             sb.Draw(tex, 0, 0, Parameters.Width, Parameters.Height, Color.White);
             if (mapId == 1) {
+                foreach (var border in borders) {
+                    sb.Draw(borderTex, border.Position.X - border.Width / 2, border.Position.Z - border.Length / 2,
+                       border.Width, border.Length, Color.White);
+                }
+
                 sb.Draw(tribuneTex, tribunes.Position.X - tribunes.Width/2, tribunes.Position.Z - tribunes.Length/2,
                     tribunes.Width, tribunes.Length, Color.White);
             }
@@ -344,9 +355,15 @@ namespace DriftRacer
             }
 
             if (mapId == 0) {
+                foreach (var border in borders) {
+                    space.Remove(border);
+                }
                 space.Remove(tribunes);
             }
             else {
+                foreach (var border in borders) {
+                    space.Add(border);
+                }
                 space.Add(tribunes);
             }
             for (int j = 0; j < 100; j++) {
