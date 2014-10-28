@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,27 +20,43 @@ using Vector3 = BEPUutilities.Vector3;
 
 namespace DriftRacer
 {
+    public class CarConfig
+    {
+        [Category("Passport")]
+        [Description("Maximum forward speed of the car")]
+        public float ForwardSpeed { get; set; }
+
+        [Category("Passport")]
+        [Description("Maximum backward speed of the car")]
+        public float BackwardSpeed { get; set; }
+
+        [Category("Passport")]
+        [Description("Maximum turn angle of the wheels")]
+        public float MaximumTurnAngle { get; set; }
+
+        [Category("Passport")]
+        [Description("Turning speed of the wheels in radians per second")]
+        public float TurnSpeed { get; set; }
+
+        [Command]
+        public void SuperCommand()
+        {
+            Log.LogInfo("Super Command!");
+        }
+
+        public CarConfig()
+        {
+            ForwardSpeed  = 100f;
+            BackwardSpeed = -23f;
+            MaximumTurnAngle = MathHelper.Pi / 6;
+            TurnSpeed = MathHelper.Pi;
+        }
+    }
+
     class Car
     {
-        /// <summary>
-        /// Speed that the Vehicle tries towreach when moving backward.
-        /// </summary>
-        public float BackwardSpeed = -23;
-
-        /// <summary>
-        /// Speed that the Vehicle tries to reach when moving forward.
-        /// </summary>
-        public float ForwardSpeed = 100;
-
-        /// <summary>
-        /// Maximum turn angle of the wheels.
-        /// </summary>
-        public float MaximumTurnAngle = (float)Math.PI / 6;
-
-        /// <summary>
-        /// Turning speed of the wheels in radians per second.
-        /// </summary>
-        public float TurnSpeed = MathHelper.Pi;
+        [Config]
+        public CarConfig config {get;set;}
 
         private bool wasGras = false;
         
@@ -53,6 +70,7 @@ namespace DriftRacer
 
         public Car(Vector3 position, Space space, Texture2D carTex)
         {
+            config = new CarConfig();
             this.texture = carTex;
             var bodies = new List<CompoundShapeEntry>
                 {
@@ -138,7 +156,7 @@ namespace DriftRacer
 
                 var ds = DriftRacer.Instance.GetService<DebugStrings>();
 
-                ds.Add(Color.Orange, "Wheel {0}:  x={1}, y={2}", i, wheelPos.X, wheelPos.Y);
+                //ds.Add(Color.Orange, "Wheel {0}:  x={1}, y={2}", i, wheelPos.X, wheelPos.Y);
 
                 try
                 {
@@ -147,22 +165,23 @@ namespace DriftRacer
                             //grass
                         case 255:
                             //back wheels
-                            wheel.DrivingMotor.GripFriction = 1;
-                            wheel.Brake.RollingFrictionCoefficient = .2f;
-                            totalWheelsOnGras += .1f;
+                            wheel.DrivingMotor.GripFriction         = 1;
+                            wheel.Brake.RollingFrictionCoefficient  = .2f;
+                            totalWheelsOnGras                       += .1f;
                             break;
                             //roadside
                         case 179:
-                            wheel.DrivingMotor.GripFriction = 2;
-                            wheel.Brake.RollingFrictionCoefficient = .08f;
-                            allOnGras = false;
-                            totalWheelsOnSurf += .05f;
+                        case 185:
+                            wheel.DrivingMotor.GripFriction         = 2;
+                            wheel.Brake.RollingFrictionCoefficient  = .08f;
+                            allOnGras                               = false;
+                            totalWheelsOnSurf                       += .05f;
                             break;
                             //good road
                         case 0:
-                            wheel.DrivingMotor.GripFriction = 5;
-                            wheel.Brake.RollingFrictionCoefficient = .02f;
-                            allOnGras = false;
+                            wheel.DrivingMotor.GripFriction         = 5;
+                            wheel.Brake.RollingFrictionCoefficient  = .02f;
+                            allOnGras                               = false;
                             break;
                     }
                 }
@@ -172,16 +191,15 @@ namespace DriftRacer
                 }
                 i++;
             }
-            if (allOnGras && allOnGras != wasGras)
-            {
+
+            if (allOnGras && allOnGras != wasGras) {
                 color = Color.Black;
                 Vehicle.Body.LinearVelocity = Vehicle.Body.LinearVelocity / 3;
                 Vehicle.Body.LinearMomentum = Vehicle.Body.LinearMomentum / 2;
 //                var imp = new Vector3(10, 0, 0);
 //                Vehicle.Body.ApplyLinearImpulse(ref imp);
             }
-            else
-            {
+            else {
                 color = Color.White;
                 
             }
@@ -193,11 +211,26 @@ namespace DriftRacer
         {
             sb.Begin();
             var cos1 = (Vehicle.Body.Orientation.Y < 0)
-                ? -Vehicle.Body.Orientation.W
-                : Vehicle.Body.Orientation.W;
-            sb.DrawSprite(texture, Vehicle.Body.Position.X, Vehicle.Body.Position.Z, CarLength, CarWidth,
-                (float) (Math.Acos(cos1)*2 + Math.PI/2), color);
+                     ? -Vehicle.Body.Orientation.W
+                     : Vehicle.Body.Orientation.W;
+            sb.DrawSprite(texture, Vehicle.Body.Position.X, Vehicle.Body.Position.Z, CarLength, CarWidth, (float) ( Math.Acos(cos1) * 2 + Math.PI / 2 ), color);
             sb.End();
+        }
+
+        public void MoveToPosition(Vector2 position)
+        {
+            Vehicle.Body.Position = new Vector3(position.X, 30, position.Y);
+            Vehicle.Body.OrientationMatrix = new Matrix3x3(0, 0, 1,
+                                                   0, 0, 0,
+                                                   0, 0, 0);
+            Vehicle.Body.LinearVelocity = Vector3.Zero;
+            Vehicle.Body.LinearMomentum = Vector3.Zero;
+            Vehicle.Body.AngularVelocity = Vector3.Zero;
+            Vehicle.Body.AngularMomentum = Vector3.Zero;
+
+            foreach (var wheel in Vehicle.Wheels) {
+                wheel.Brake.IsBraking = true;
+            }
         }
     }
 }

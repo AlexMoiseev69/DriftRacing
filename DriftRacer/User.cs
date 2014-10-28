@@ -13,9 +13,9 @@ namespace DriftRacer
 {
     class User
     {
-        private readonly Car car;
+        private Car car;
         private String name;
-        private Gamepad gp;
+        public Gamepad gp;
 
         public User(string name, Car car, Gamepad gp)
         {
@@ -26,8 +26,7 @@ namespace DriftRacer
 
         public Boolean Update(GameTime gameTime)
         {
-            if (gp.IsConnected)
-            {
+            if (gp.IsConnected) {
                 Vector2 v = car.Update();
                 gp.SetVibration(v.X, v.Y);
                 updateCarControllers(gameTime.ElapsedSec);
@@ -42,39 +41,38 @@ namespace DriftRacer
             car.Draw(sb);
         }
 
+        public void MoveToPosition(Vector2 position)
+        {
+            car.MoveToPosition(position);
+        }
+
         private void updateCarControllers(float delta)
         {
-            if (gp.IsKeyPressed(GamepadButtons.A))
-            {
+            if (gp.IsKeyPressed(GamepadButtons.A)) {
                 //Drive
-                car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.ForwardSpeed;
-                car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.ForwardSpeed;
+                car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.config.ForwardSpeed;
+                car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.config.ForwardSpeed;
             }
-            else if (gp.IsKeyPressed(GamepadButtons.B))
-            {
+            else if (gp.IsKeyPressed(GamepadButtons.B)) {
                 //Reverse
-                car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.BackwardSpeed;
-                car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.BackwardSpeed;
-            }
-            else
-            {
+                car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.config.BackwardSpeed;
+                car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.config.BackwardSpeed;
+            } 
+            else {
                 //Idle
                 car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = 0;
                 car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = 0;
             }
-            if (gp.IsKeyPressed(GamepadButtons.RightShoulder))
-            {
+
+
+            if (gp.IsKeyPressed(GamepadButtons.RightShoulder)) {
                 //Brake
-                foreach (Wheel wheel in car.Vehicle.Wheels)
-                {
+                foreach (Wheel wheel in car.Vehicle.Wheels) {
                     wheel.Brake.IsBraking = true;
                 }
-            }
-            else
-            {
+            } else {
                 //Release brake
-                foreach (Wheel wheel in car.Vehicle.Wheels)
-                {
+                foreach (Wheel wheel in car.Vehicle.Wheels) {
                     wheel.Brake.IsBraking = false;
                 }
             }
@@ -82,32 +80,29 @@ namespace DriftRacer
             //When not pressing any buttons, smoothly return to facing forward.
             float angle;
             bool steered = false;
-            if (gp.IsKeyPressed(GamepadButtons.DPadLeft))
-            {
+            if (gp.IsKeyPressed(GamepadButtons.DPadLeft)) {
                 steered = true;
-                angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.TurnSpeed * delta, -car.MaximumTurnAngle);
+                angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.config.TurnSpeed * delta, -car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
             }
-            if (gp.IsKeyPressed(GamepadButtons.DPadRight))
-            {
+
+            if (gp.IsKeyPressed(GamepadButtons.DPadRight)) {
                 steered = true;
-                angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.TurnSpeed * delta, car.MaximumTurnAngle);
+                angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.config.TurnSpeed * delta, car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
-            }
-            if (!steered)
-            {
+            } 
+            
+            if (!steered) {
                 //Neither key was pressed, so de-steer.
-                if (car.Vehicle.Wheels[1].Shape.SteeringAngle > 0)
-                {
-                    angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.TurnSpeed * delta, 0);
+                if (car.Vehicle.Wheels[1].Shape.SteeringAngle > 0) {
+                    angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.config.TurnSpeed * delta, 0);
                     car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                     car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
                 }
-                else
-                {
-                    angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.TurnSpeed * delta, 0);
+                else {
+                    angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.config.TurnSpeed * delta, 0);
                     car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                     car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
                 }
