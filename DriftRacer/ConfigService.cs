@@ -19,9 +19,10 @@ namespace DriftRacer
 
             Tracks[0] = new Track()
             {
+
                 TrackName = "SuperTrack",
-                TrackTexture = "images/route_2.png",
-                TrackSurfaceTexture = "\\Content\\images\\route_2_mh.png",
+                TrackTexture = "images/route_1.png",
+                TrackSurfaceTexture = "\\Content\\images\\route_1_mh.png",
 
                 CarsStartPositions = new Vector2[4]{
                     new Vector2(525, 40),
@@ -33,15 +34,15 @@ namespace DriftRacer
 
             Tracks[1] = new Track()
             {
-                TrackName           =  "SuperTrack",
-                TrackTexture        = "images/route_1.png",
-                TrackSurfaceTexture = "\\Content\\images\\route_1_mh.png",
+                TrackName = "SuperTrack",
+                TrackTexture = "images/route_2.png",
+                TrackSurfaceTexture = "\\Content\\images\\route_2_mh.png",
 
                 CarsStartPositions = new Vector2[4]{
-                    new Vector2(325, 50),
-                    new Vector2(300, 100),
-                    new Vector2(225, 50),
-                    new Vector2(200, 100),
+                    new Vector2(655, 52),
+                    new Vector2(573, 95),
+                    new Vector2(495, 52),
+                    new Vector2(423, 95),
                 },
             };
         }

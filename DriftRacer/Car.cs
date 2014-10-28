@@ -193,11 +193,8 @@ namespace DriftRacer
             }
 
             if (allOnGras && allOnGras != wasGras) {
-                color = Color.Black;
                 Vehicle.Body.LinearVelocity = Vehicle.Body.LinearVelocity / 3;
                 Vehicle.Body.LinearMomentum = Vehicle.Body.LinearMomentum / 2;
-//                var imp = new Vector3(10, 0, 0);
-//                Vehicle.Body.ApplyLinearImpulse(ref imp);
             }
             else {
                 color = Color.White;

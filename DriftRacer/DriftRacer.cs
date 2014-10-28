@@ -115,7 +115,7 @@ namespace DriftRacer
 
 
             SpriteFont font = Content.Load<SpriteFont>("stencil");
-            var btn1 = new Frame(this, Parameters.Width / 2, 100, 0, 0, "Click \"BACK\" to change map or click \"START\" to continur", Color.Red) {
+            var btn1 = new Frame(this, Parameters.Width / 2, 100, 0, 0, "Click \"BACK\" to change map", Color.Red) {
                 Border = 1,
                 BorderColor = Color.White,
                 TextAlignment = Alignment.MiddleCenter,
@@ -125,15 +125,21 @@ namespace DriftRacer
             btn1.TextAlignment = Alignment.MiddleCenter;
 
 
+            ui.RootFrame.Add(btn1);
 
-            btn1.StatusChanged += (s, e) =>
+            var btn2 = new Frame(this, Parameters.Width / 2, 200, 0, 0, "or click \"START\" to continur", Color.Red)
             {
-                if (e.Status == FrameStatus.None) btn1.BackColor = new Color(64, 64, 64, 255);
-                if (e.Status == FrameStatus.Hovered) btn1.BackColor = new Color(96, 96, 96, 255);
-                if (e.Status == FrameStatus.Pushed) btn1.BackColor = new Color(128, 128, 128, 255);
+                Border = 1,
+                BorderColor = Color.White,
+                TextAlignment = Alignment.MiddleCenter,
+                Font = font,
             };
 
-            ui.RootFrame.Add(btn1);
+            btn2.TextAlignment = Alignment.MiddleCenter;
+
+
+            ui.RootFrame.Add(btn2);
+
             ui.Visible = false;
             GameState = GameState.Play;
 
@@ -210,9 +216,9 @@ namespace DriftRacer
             }
 
             if (e.Key == Keys.Escape) {
-                tex.Dispose();
-                Surfece.Dispose();
-                GetService<ConfigService>();
+                //tex.Dispose();
+                //Surfece.Dispose();
+                //GetService<ConfigService>();
                 Exit();
             }
         }
@@ -228,7 +234,11 @@ namespace DriftRacer
         {
             SaveConfiguration();
         }
-        
+
+
+        private float changeFlagTime = 1f;
+        private float changeFlagTimeLeft = 1f;
+        private bool changeFlag = true;
         /// <summary>
         /// 
         /// </summary>
@@ -236,6 +246,12 @@ namespace DriftRacer
         protected override void Update(GameTime gameTime)
         {
             var ds = GetService<DebugStrings>();
+
+            if (!changeFlag && (changeFlagTimeLeft -= gameTime.ElapsedSec) <= 0)
+            {
+                changeFlag = true;
+                changeFlagTimeLeft = changeFlagTime;
+            }
 
             ds.Add(Color.Orange, "FPS {0}", gameTime.Fps);
             ds.Add("F1   - show developer console");
@@ -259,8 +275,9 @@ namespace DriftRacer
                             GameState = GameState.Play;
                             GetService<UserInterface>().Visible = false;
                         }
-                        if (user.gp.IsKeyPressed(GamepadButtons.Back)) {
+                        if (user.gp.IsKeyPressed(GamepadButtons.Back) && changeFlag) {
                             SetNextMap();
+                            changeFlag = false;
                         }
                         user.gp.SetVibration(0, 0);
                         break;
@@ -268,6 +285,7 @@ namespace DriftRacer
                         if (user.gp.IsKeyPressed(GamepadButtons.Back)) {
                             GameState = GameState.Pause;
                             GetService<UserInterface>().Visible = true;
+                            changeFlag = false;
                         }
                         user.Update(gameTime);
                         break;
