@@ -131,12 +131,6 @@ namespace DriftRacer
 
             btn1.TextAlignment = Alignment.MiddleCenter;
 
-<<<<<<< HEAD
-            Surfece = new Bitmap("C:/Users/Yaroslav/Documents/DriftRacing/DriftRacer/Content/images/route_1_mh.png");
-        }
-=======
->>>>>>> origin/master
-
             ui.RootFrame.Add(btn1);
 
             var btn2 = new Frame(this, Parameters.Width / 2, 200, 0, 0, "or click \"START\" to continur", Color.Red)
