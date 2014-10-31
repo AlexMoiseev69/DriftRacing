@@ -15,6 +15,7 @@ using BEPUphysics.CollisionShapes.ConvexShapes;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Vehicle;
 using BEPUutilities;
+using DriftRacer.particle;
 using Fusion.UserInterface;
 using Vector3BEPU = BEPUutilities.Vector3;
 using MatrixBEPU = BEPUutilities.Matrix;
@@ -51,6 +52,8 @@ namespace DriftRacer
         public static Bitmap Surfece;
 
         private int mapId = -1;
+
+        private List<Particle> particles;
 
         /// <summary>
         /// DriftRacer constructor
@@ -146,6 +149,8 @@ namespace DriftRacer
 
             ui.Visible = false;
             GameState = GameState.Play;
+
+            particles = new List<Particle>();
 
             SetNextMap();
         }
@@ -275,6 +280,17 @@ namespace DriftRacer
 
             if (GameState != GameState.Pause) {
                 space.Update(gameTime.ElapsedSec*10f);
+
+                List<Particle> toRemoveList = new List<Particle>();
+                foreach (var particle in particles) {
+                    if (particle.Update(gameTime.ElapsedSec))
+                    {
+                        toRemoveList.Add(particle);
+                    }
+                }
+                foreach (var particle in toRemoveList) {
+                    particles.Remove(particle);
+                }
             }
 
             foreach (var user in users)
@@ -305,6 +321,15 @@ namespace DriftRacer
                         break;
                 }
             }
+            if (InputDevice.IsKeyDown(Keys.LeftButton)) {
+                TestParticles(new Vector2(InputDevice.GlobalMouseOffset.X, InputDevice.GlobalMouseOffset.Y));/*
+                ds.Add(" - {0}", "Left BTN");
+                Particle particle = ParticleFactory.Instance.GetDustParticle();
+                particle.position = new Vector2(InputDevice.GlobalMouseOffset.X, InputDevice.GlobalMouseOffset.Y);
+                particles.Add(particle);*/
+            }
+
+            
 
             base.Update(gameTime);
         }
@@ -332,6 +357,12 @@ namespace DriftRacer
                     tribunes.Width, tribunes.Length, Color.White);
             }
             sb.End();
+
+            foreach (var particle in particles)
+            {
+                particle.Draw(sb);
+            }
+            
             foreach (User user in users) {
                 user.Draw(sb);
             }
@@ -368,6 +399,48 @@ namespace DriftRacer
             }
             for (int j = 0; j < 100; j++) {
                 space.Update(100f);
+            }
+        }
+
+        public void AddParticle(Vector2 position, ParticleFactory.ParticleType type)
+        {
+            Particle particle;
+            switch (type)
+            {
+                case ParticleFactory.ParticleType.Dust:
+                    particle = ParticleFactory.Instance.GetDustParticle();
+                    break;
+                case ParticleFactory.ParticleType.Grass:
+                    particle = ParticleFactory.Instance.GetGrassParticle();
+                    break;
+                case ParticleFactory.ParticleType.RoadDust:
+                    particle = ParticleFactory.Instance.GetRoadDustParticle();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("type");
+            }
+            particle.position = position;
+            particles.Add(particle);
+        }
+
+        public void TestParticles(Vector2 position)
+        {
+            switch (DriftRacer.Surfece.GetPixel((int)Math.Round(position.X), (int)Math.Round(position.Y)).R)
+            {
+                //grass
+                case 255:
+                    //back wheels
+                    ((DriftRacer)Game.Instance).AddParticle(position, ParticleFactory.ParticleType.Grass);
+                    break;
+                //roadside
+                case 179:
+                case 185:
+                    ((DriftRacer)Game.Instance).AddParticle(position, ParticleFactory.ParticleType.Dust);
+                    break;
+                //good road
+                case 0:
+                    ((DriftRacer)Game.Instance).AddParticle(position, ParticleFactory.ParticleType.RoadDust);
+                    break;
             }
         }
     }

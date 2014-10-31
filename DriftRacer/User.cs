@@ -9,6 +9,7 @@ using Fusion;
 using Fusion.Graphics;
 using Fusion.Input;
 
+
 namespace DriftRacer
 {
     class User
@@ -29,7 +30,7 @@ namespace DriftRacer
             if (gp.IsConnected) {
                 Vector2 v = car.Update();
                 gp.SetVibration(v.X, v.Y);
-                updateCarControllers(gameTime.ElapsedSec);
+                UpdateCarControllers(gameTime.ElapsedSec);
 
                 return true;
             }
@@ -46,14 +47,15 @@ namespace DriftRacer
             car.MoveToPosition(position);
         }
 
-        private void updateCarControllers(float delta)
+        private void UpdateCarControllers(float delta)
         {
-            if (gp.IsKeyPressed(GamepadButtons.A)) {
+
+            if (gp.RightTrigger > 0) {
                 //Drive
                 car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.config.ForwardSpeed;
                 car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.config.ForwardSpeed;
             }
-            else if (gp.IsKeyPressed(GamepadButtons.B)) {
+            else if (gp.LeftTrigger > 0) {
                 //Reverse
                 car.Vehicle.Wheels[0].DrivingMotor.TargetSpeed = car.config.BackwardSpeed;
                 car.Vehicle.Wheels[2].DrivingMotor.TargetSpeed = car.config.BackwardSpeed;
@@ -69,6 +71,7 @@ namespace DriftRacer
                 //Brake
                 foreach (Wheel wheel in car.Vehicle.Wheels) {
                     wheel.Brake.IsBraking = true;
+
                 }
             } else {
                 //Release brake
@@ -80,14 +83,14 @@ namespace DriftRacer
             //When not pressing any buttons, smoothly return to facing forward.
             float angle;
             bool steered = false;
-            if (gp.IsKeyPressed(GamepadButtons.DPadLeft)) {
+            if (gp.LeftStick.X < 0) {
                 steered = true;
                 angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.config.TurnSpeed * delta, -car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
             }
 
-            if (gp.IsKeyPressed(GamepadButtons.DPadRight)) {
+            if (gp.LeftStick.X > 0) {
                 steered = true;
                 angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.config.TurnSpeed * delta, car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
@@ -107,6 +110,7 @@ namespace DriftRacer
                     car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
                 }
             }
+
         }
     }
 }

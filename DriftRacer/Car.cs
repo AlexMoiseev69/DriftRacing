@@ -10,6 +10,7 @@ using BEPUphysics.CollisionShapes.ConvexShapes;
 using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.Vehicle;
 using BEPUutilities;
+using DriftRacer.particle;
 using Fusion;
 using Fusion.Graphics;
 using SharpDX;
@@ -168,6 +169,10 @@ namespace DriftRacer
                             wheel.DrivingMotor.GripFriction         = 1;
                             wheel.Brake.RollingFrictionCoefficient  = .2f;
                             totalWheelsOnGras                       += .1f;
+                            if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            {
+                                ((DriftRacer)Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.Grass);
+                            }
                             break;
                             //roadside
                         case 179:
@@ -176,12 +181,20 @@ namespace DriftRacer
                             wheel.Brake.RollingFrictionCoefficient  = .08f;
                             allOnGras                               = false;
                             totalWheelsOnSurf                       += .05f;
+                            if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            {
+                                ((DriftRacer) Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.Dust);
+                            }
                             break;
                             //good road
                         case 0:
                             wheel.DrivingMotor.GripFriction         = 5;
                             wheel.Brake.RollingFrictionCoefficient  = .02f;
                             allOnGras                               = false;
+                            if (wheel.Brake.IsBraking && Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            {
+                                ((DriftRacer) Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.RoadDust);
+                            }
                             break;
                     }
                 }
