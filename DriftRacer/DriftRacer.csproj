@@ -50,6 +50,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,10 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Car.cs" />
+<<<<<<< HEAD
     <Compile Include="DrifterMenu.cs" />
+=======
+    <Compile Include="ConfigService.cs" />
+>>>>>>> origin/master
     <Compile Include="DriftRacer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

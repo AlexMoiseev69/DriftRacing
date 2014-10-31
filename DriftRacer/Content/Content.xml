@@ -79,18 +79,6 @@
     <Compression>RGB</Compression>
   </Descriptor>
   <Descriptor xsi:type="ImageContentItem">
-    <Path>images\route.png</Path>
-    <Dependencies />
-    <ContentProcessor>Image Processor</ContentProcessor>
-    <NoMips>false</NoMips>
-    <Fast>false</Fast>
-    <ToNormal>false</ToNormal>
-    <Color>true</Color>
-    <Alpha>false</Alpha>
-    <Normal>false</Normal>
-    <Compression>RGB</Compression>
-  </Descriptor>
-  <Descriptor xsi:type="ImageContentItem">
     <Path>images\route_1.png</Path>
     <Dependencies />
     <ContentProcessor>Image Processor</ContentProcessor>
@@ -104,6 +92,88 @@
   </Descriptor>
   <Descriptor xsi:type="ImageContentItem">
     <Path>images\route_1_mh.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\route_2.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\route_2_mh.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ContentItem">
+    <Path>segoe40.bmfc</Path>
+    <Dependencies />
+    <ContentProcessor>BMFC Processor</ContentProcessor>
+  </Descriptor>
+  <Descriptor xsi:type="ContentItem">
+    <Path>stencil.bmfc</Path>
+    <Dependencies />
+    <ContentProcessor>BMFC Processor</ContentProcessor>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\car3.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\car4.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\border.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\tribunes.png</Path>
     <Dependencies />
     <ContentProcessor>Image Processor</ContentProcessor>
     <NoMips>false</NoMips>
