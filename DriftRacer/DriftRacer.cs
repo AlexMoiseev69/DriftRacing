@@ -120,7 +120,7 @@ namespace DriftRacer
             InputDevice.KeyDown += InputDevice_KeyDown;
 
 
-            Surfece = new Bitmap("D:/dududko/DriftRacing/DriftRacer/Content/images/route_1_mh.png");
+            Surfece = new Bitmap("C:/Users/Yaroslav/Documents/DriftRacing/DriftRacer/Content/images/route_1_mh.png");
         }
 
         private void addCars()

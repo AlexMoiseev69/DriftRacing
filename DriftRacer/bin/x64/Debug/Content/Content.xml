@@ -114,4 +114,16 @@
     <Normal>false</Normal>
     <Compression>RGB</Compression>
   </Descriptor>
+  <Descriptor xsi:type="ImageContentItem">
+    <Path>images\racing_flag.png</Path>
+    <Dependencies />
+    <ContentProcessor>Image Processor</ContentProcessor>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+  </Descriptor>
 </ArrayOfDescriptor>

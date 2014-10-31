@@ -12,7 +12,7 @@ namespace DriftRacer
         [STAThread]
         static void Main(string[] args)
         {
-            using (var game = new DriftRacer())
+            using (var game = new DrifterMenu())
             {
                 game.Parameters.TrackObjects = true;
                 game.Run(args);
