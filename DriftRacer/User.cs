@@ -28,7 +28,7 @@ namespace DriftRacer
         public Boolean Update(GameTime gameTime)
         {
             if (gp.IsConnected) {
-                Vector2 v = car.Update();
+                Vector2 v = car.Update(gameTime);
                 gp.SetVibration(v.X, v.Y);
                 UpdateCarControllers(gameTime.ElapsedSec);
 
@@ -85,14 +85,16 @@ namespace DriftRacer
             bool steered = false;
             if (gp.LeftStick.X < 0) {
                 steered = true;
-                angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.config.TurnSpeed * delta, -car.config.MaximumTurnAngle);
+                //angle = Math.Max(car.Vehicle.Wheels[1].Shape.SteeringAngle - car.config.TurnSpeed * delta, -car.config.MaximumTurnAngle);
+                angle = Math.Max(gp.LeftStick.X * car.config.MaximumTurnAngle, -car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
             }
 
             if (gp.LeftStick.X > 0) {
                 steered = true;
-                angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.config.TurnSpeed * delta, car.config.MaximumTurnAngle);
+                //angle = Math.Min(car.Vehicle.Wheels[1].Shape.SteeringAngle + car.config.TurnSpeed * delta, car.config.MaximumTurnAngle);
+                angle = Math.Max(gp.LeftStick.X * car.config.MaximumTurnAngle, -car.config.MaximumTurnAngle);
                 car.Vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 car.Vehicle.Wheels[3].Shape.SteeringAngle = angle;
             } 

@@ -16,9 +16,9 @@ namespace DriftRacer.particle
 
         public override void SetDefaults()
         {
-            lifetime = 2f;
+            lifetime = 10f;
             scale = 0.1f;
-            maxScale = 0.5f;
+            maxScale = 0.2f;
             color = Color.Black;
 
             rotation = new Random().NextFloat(0, (float)(Math.PI * 2));

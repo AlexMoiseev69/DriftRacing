@@ -63,7 +63,6 @@ namespace DriftRacer.particle
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Begin();
             sb.DrawSprite(texture,
                     position.X,
                     position.Y,
@@ -71,7 +70,6 @@ namespace DriftRacer.particle
                     texture.Height * scale,
                     rotation,
                     color);
-            sb.End();
         }
     }
 }

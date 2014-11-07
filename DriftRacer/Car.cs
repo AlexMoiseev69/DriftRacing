@@ -71,6 +71,7 @@ namespace DriftRacer
 
         public Car(Vector3 position, Space space, Texture2D carTex)
         {
+        
             config = new CarConfig();
             this.texture = carTex;
             var bodies = new List<CompoundShapeEntry>
@@ -143,10 +144,16 @@ namespace DriftRacer
             space.Add(Vehicle);
         }
         Color color;
-
-        public Vector2 Update()
+        float delta = 0;
+        float bareer = 1/20f;
+        
+        public Vector2 Update(GameTime gameTime)
         {
             // dependent on surfece type, change wheel friction
+            delta += gameTime.ElapsedSec;
+            if (delta > bareer) {
+                delta = 0;
+            }
             int i = 0;
             float totalWheelsOnGras = 0f;
             float totalWheelsOnSurf = 0f;
@@ -169,7 +176,8 @@ namespace DriftRacer
                             wheel.DrivingMotor.GripFriction         = 1;
                             wheel.Brake.RollingFrictionCoefficient  = .2f;
                             totalWheelsOnGras                       += .1f;
-                            if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            //if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            if (delta == 0 && Vehicle.Body.LinearVelocity.X > 0 && Vehicle.Body.LinearVelocity.Y > 0)
                             {
                                 ((DriftRacer)Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.Grass);
                             }
@@ -181,7 +189,8 @@ namespace DriftRacer
                             wheel.Brake.RollingFrictionCoefficient  = .08f;
                             allOnGras                               = false;
                             totalWheelsOnSurf                       += .05f;
-                            if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            //if (Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            if (delta == 0 && Vehicle.Body.LinearVelocity.X > 0 && Vehicle.Body.LinearVelocity.Y > 0)
                             {
                                 ((DriftRacer) Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.Dust);
                             }
@@ -191,7 +200,8 @@ namespace DriftRacer
                             wheel.DrivingMotor.GripFriction         = 5;
                             wheel.Brake.RollingFrictionCoefficient  = .02f;
                             allOnGras                               = false;
-                            if (wheel.Brake.IsBraking && Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            //if (wheel.Brake.IsBraking && Math.Abs(Vehicle.Body.LinearVelocity.LengthSquared()) > 0)
+                            if (delta == 0 && wheel.Brake.IsBraking && Vehicle.Body.LinearVelocity.X > 0 && Vehicle.Body.LinearVelocity.Y > 0)
                             {
                                 ((DriftRacer) Game.Instance).AddParticle(wheelPos, ParticleFactory.ParticleType.RoadDust);
                             }
@@ -219,12 +229,10 @@ namespace DriftRacer
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Begin();
             var cos1 = (Vehicle.Body.Orientation.Y < 0)
                      ? -Vehicle.Body.Orientation.W
                      : Vehicle.Body.Orientation.W;
             sb.DrawSprite(texture, Vehicle.Body.Position.X, Vehicle.Body.Position.Z, CarLength, CarWidth, (float) ( Math.Acos(cos1) * 2 + Math.PI / 2 ), color);
-            sb.End();
         }
 
         public void MoveToPosition(Vector2 position)

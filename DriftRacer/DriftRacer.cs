@@ -355,16 +355,18 @@ namespace DriftRacer
                 sb.Draw(tribuneTex, tribunes.Position.X - tribunes.Width/2, tribunes.Position.Z - tribunes.Length/2,
                     tribunes.Width, tribunes.Length, Color.White);
             }
-            sb.End();
-
+            // draw particles
             foreach (var particle in particles)
             {
                 particle.Draw(sb);
             }
-            
+            // draw cars
             foreach (User user in users) {
                 user.Draw(sb);
             }
+            sb.End();
+
+            
 
             base.Draw(gameTime, stereoEye);
         }
